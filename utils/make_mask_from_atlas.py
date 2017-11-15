@@ -1,27 +1,40 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python
+import os
 import sys
 import argparse
-import nibabel as nb
+import numpy as np
 
-parser = argparse.ArgumentParser()
-parser.add_argument("outdir", )
-parser.add_argument("atlas")
-parser.add_argument("rois")
-parser.add_argument("maskpre")
+from mvpa2.datasets.mri import fmri_dataset, map2nifti
+
+parser = argparse.ArgumentParser(description="Create masks from atlas")
+
+parser.add_argument("-o", metavar="out-dir", action="store", dest="outdir", type=str, required=True, help=('The fullpath to the output directory - where to put these masks.') )
+
+parser.add_argument("-i", metavar="in-atlas", action="store", dest="atlas_name", type=str, required=True, help=("The fullpath to the atlas being used.") )
+
+parser.add_argument("-n", metavar="N-rois", action="store", dest="n_rois", type=int, required=True, help=("Number of ROIs in atlas.") )
+
+parser.add_argument("-p", metavar="mask-prefix", action="store", dest="mask_prefix", type=str, required=True, help=("The prefix to each mask ROI output.") )
+
+parser.add_argument("-d",  action="store_true", dest="dryrun", default=False, required=False, help=("Run a dry run of the options.") )
+
 args = parser.parse_args()
 
-print args.outdir
-print args.atlas
-print args.rois
-print args.maskpre
+if args.dryrun:
+    print "INPUT ARGUMENTS:"
+    print "Output directory:%s"%args.outdir
+    print "Atlas being used: %s"%args.atlas_name
+    print "Number of ROIs in atlas: %03d"%args.n_rois
+    print "Mask prefix on individual mask images: %s"%args.mask_prefix
 
-"""
-atlas = fmri_dataset(samples=atlas_name)
+atlas = fmri_dataset(samples=args.atlas_name)
 
-for i in np.arange(0,n_rois):
+for i in np.arange(1,args.n_rois+1):
     tmp=atlas.copy()
     tmp.samples=(tmp.samples==i).astype(int)
     tmpimg = map2nifti(tmp)
-    tmpimg.to_filename( os.path.join(maskdir,'%s_%03d.nii'%(mask_prefixes,i ) ) )
-"""
+    fname=os.path.join(args.outdir,'%s_%03d_2mm.nii'%(args.mask_prefix,i ) )
+    if args.dryrun:
+        print "There appears to be no errors - will save mask %03d as %s"%(i, fname)
+    else:
+        tmpimg.to_filename( fname )
