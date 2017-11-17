@@ -31,15 +31,15 @@ RUN=$3
 DTYPE=$4
 
 # location of FIX confound variables
-csffile=${WORK}/test_hcp/hcp_behav_rest/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_CSF.txt
-wmfile=${WORK}/test_hcp/hcp_behav_rest/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_WM.txt
-baseout=${WORK}/test_hcp/hcp_behav_rest/subjects/${SUBJECT}/${PHASE}/${RUN}/confounds
+csffile=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_CSF.txt
+wmfile=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_WM.txt
+baseout=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/confounds
 outfile=${baseout}.txt
-outlog=${WORK}/test_hcp/hcp_behav_rest/subjects/${SUBJECT}/${PHASE}/${RUN}/hist_file.log
+outlog=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/hist_file.log
 
 # image files
-imgfile=${WORK}/test_hcp/hcp_behav_rest/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_hp2000_clean.nii.gz
-newfile=${WORK}/test_hcp/hcp_behav_rest/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_hp2000_clean_FILT.nii.gz
+imgfile=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_hp2000_clean.nii.gz
+newfile=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_hp2000_clean_FILT.nii.gz
 
 # make sure these file exist
 if ! [ -f $wmfile ] || ! [ -f $csffile ]; then
