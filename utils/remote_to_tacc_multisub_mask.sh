@@ -13,8 +13,12 @@ while read subject; do
 
 echo "working on subject, $subject"
 
-$HOME/analysis/hcp_rest_behave/utils/remote_to_tacc_subject_masks.sh $subject
-
+if [ -f $HOME/analysis/hcp_rest_behav/utils/remote_to_tacc_subject_mask.sh ]; then
+$HOME/analysis/hcp_rest_behav/utils/remote_to_tacc_subject_mask.sh $subject
+else
+echo "Calling a script that does not exist"
+exit 1
+fi
 echo "completed subject, $subject"
 
 done < "$FILE"

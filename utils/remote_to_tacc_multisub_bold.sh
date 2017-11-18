@@ -13,7 +13,7 @@ while IFS=, read -r col1; do
 
 echo "working on subject, ${col1}"
 
-./local_to_remote_subject.sh ${col1} ${PHASE}
+$HOME/analysis/hcp_rest_behav/utils/remote_to_tacc_subject_bold.sh ${col1} ${PHASE}
 
 echo "completed subject, ${col1}"
 
