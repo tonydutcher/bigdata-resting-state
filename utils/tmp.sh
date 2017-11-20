@@ -1,26 +1,18 @@
 #!/bin/bash
 
-cd subjects
+subdir=$WORK/hcp_rest_behav/subjects
 
+cd $subdir
 subjects=`ls -d ??????`
-
+count=1
 for s in ${subjects[@]}; do
+ 
+${HOME}/analysis/hcp_rest_behav/utils/compress_hdf5.py -s ${subdir}/${s}
 
-cd $s
-cd RL
-mkdir REST1
-mv *.nii.gz *.txt REST1
-cd ..
+#if [ ${count} -eq 4 ];then
+#echo "Check to make sure things worked."
+#exit 1
+#fi
 
-cd LR
-mkdir REST1
-mv *.nii.gz *.txt REST1
-cd ..
-
-mkdir RL/REST2
-mkdir LR/REST2
-
-cd ..
-
+count=`echo "${count}+1" | bc -l`
 done
-cd ..
