@@ -34,18 +34,20 @@ count=0
 while count <= (nfiles-1):
     s   = int(foundfiles[count].split('/')[7])
     arr = np.load(foundfiles[count])
-    print "Loading in rsfc data for subject %s"%(s)
+    #print "Loading in rsfc data for subject %s"%(s)
     if count == 0:
         data=np.zeros([nfiles,arr.shape[1]+1])
 
     if (data.shape[1]-1) == (arr.shape[1]):
-	print "Adding subject %s to group"%(s)
+	#print "Adding subject %s to group"%(s)
         data[count,:]=np.concatenate( ( np.array([s]).ravel(), arr.ravel() ) )
     else:
-        print "Not adding subject %s to group, dimension mismatch"%(s)
+        pass
+        #print "Not adding subject %s to group, dimension mismatch"%(s)
+    
     count+=1
 
 # saving outfile
 print "Saving text file, %s"%outfile
-np.savetxt(outfile, data, delimiter=" ")
+np.savetxt(("%s.txt"%outfile), data, delimiter=" ")
 np.save(outfile, data) 

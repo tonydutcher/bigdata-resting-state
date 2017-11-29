@@ -186,7 +186,7 @@ elif args.corrrun is "combo":
     np.save( "%s_mean"%(os.path.join(outdir,maskname)), cat_mask_mts )
     
     # run the correlation
-    P=cat_brain.shape[0]
+    P=cat_brain.shape[1]
     rsfc=np.zeros([1,P])
     print "running the correlation using np.corrcoef"
     for v in np.arange(P):
