@@ -1,11 +1,12 @@
 #!/bin/bash
-if [ $# -lt 4 ]; then
-        echo "  Usage: regress_confounds.sh <sid> <phase> <run> <dtype>
+if [ $# -lt 5 ] || [ $1 = '-h' ]; then
+        echo "  Usage: regress_confounds.sh <sid> <phase> <run> <dtype> <mvfile>
                 INPUTS - separated by spaces
-                sid   = subject id - refers to subject directory with image file
-                phase = RL or LR - the phase encoding direction of image file
-                run   = REST1 or REST2 - the run
-                dtype = FIX or PROC data type of image to create confound file for"
+                sid    = subject id - refers to subject directory with image file (not full path)
+                phase  = RL or LR - the phase encoding direction of image file
+                run    = REST1 or REST2 - the run
+                dtype  = FIX or PROC data type of image to create confound file for
+                mvfile = y or n, move the original file to scratch?"
         exit 1
 
 fi
@@ -29,6 +30,7 @@ SUBJECT=$1
 PHASE=$2
 RUN=$3
 DTYPE=$4
+MVFILE=$5
 
 # location of FIX confound variables
 csffile=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_${PHASE}_CSF.txt
@@ -45,6 +47,10 @@ newfile=${WORK}/hcp_rest_behav/subjects/${SUBJECT}/${PHASE}/${RUN}/rfMRI_${RUN}_
 if ! [ -f $wmfile ] || ! [ -f $csffile ]; then
 echo "WM or CSF file does not exist."
 exit 1
+
+elif [ -e ${newfile} ]; then
+echo "${newfile} ALREAD EXISTS, exiting..."
+exit 1
 fi
 
 # the FIX data type does not have motion correction as confound for subsequent analysis. 
@@ -56,12 +62,12 @@ echo -e "paste rfMRI_${RUN}_${PHASE}_CSF.txt rfMRI_${RUN}_${PHASE}_WM.txt | colu
 fi
 
 # regress out confounds.
-if [ -f ${outfile} ]; then
+if [ -e ${outfile} ]; then
 
 echo "Running fsl_glm -i ${imgfile} -d ${outfile} --out_res=${newfile}"
 fsl_glm -i ${imgfile} -d ${outfile} --out_res=${newfile}
 
-if [ -f ${newfile} ]; then
+if [ -e ${newfile} ] && [ $MVFILE = 'y' ]; then
 # move old file to scratch...
 mkdir -p ${SCRATCH}/hcp_112017/${SUBJECT}/${PHASE}/${RUN}
 echo "Moving ${imgfile}">>${outlog}
@@ -69,6 +75,9 @@ echo "To ${SCRATCH}/hcp_112017/${SUBJECT}/${PHASE}/${RUN}"
 mv ${imgfile} ${SCRATCH}/hcp_112017/${SUBJECT}/${PHASE}/${RUN}
 fi
 
-else
+elif ! [ -e ${imgfile} ]; then
 echo "No image file to process for ${SUBJECT} ${PHASE} ${RUN}"
+
+elif [ -e ${newfile} ] && [ $MVFILE = 'n' ]; then
+echo "Image file for ${SUBJECT} ${PHASE} ${RUN} processed and not moved to scratch"
 fi

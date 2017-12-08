@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# script directory
+srcdir=$HOME/analysis/hcp_rest_behav
+
+# study name and directory
+export STUDY=hcp_rest_behav
+export STUDYDIR=$WORK/hcp_rest_behav
+
+# add fat and bender directories to path
+export PATH=$PATH:$srcdir:$srcdir/preprocess:$srcdir/utils
+export SRCDIR=$srcdir
+export PYTHONPATH=$PYTHONPATH:$srcdir:$srcdir/utils:$srcdir/preprocess
+
+# add MNI 2mm brain for easy access
+export MNI=$FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
+
+# launch scripts and output directory
+export BATCHDIR=${WORK}/hcp_rest_behav/batch

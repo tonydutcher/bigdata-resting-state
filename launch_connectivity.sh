@@ -1,78 +1,87 @@
 #!/bin/bash
 
-# study specific paths
-subdir=/work/04635/adutcher/lonestar/hcp_rest_behav/subjects
-maskdir=/work/04635/adutcher/lonestar/masks/bn
-outdir=/work/04635/adutcher/lonestar/hcp_rest_behav/logs
-scriptdir=/home1/04635/adutcher/analysis/hcp_rest_behav
-batchdir=/work/04635/adutcher/lonestar/hcp_rest_behav/batch
-launchdir=/work/04635/adutcher/lonestar/hcp_rest_behav/batch/launch
-m1=BN_179_2mm.nii
-m2=BN_180_2mm.nii
-m3=BN_178_2mm.nii
-m4=BN_177_2mm.nii
-m5=BN_029_2mm.nii
-m6=BN_030_2mm.nii
-m7=BN_218_2mm.nii
-m8=BN_217_2mm.nii
+FILE=$1
 
-cd ${subdir}
-subjects=`ls -d ??????`
+MASKDIR1=${WORK}/masks/mni_mtl
+MASKDIR2=${WORK}/masks/bn
 
-cd ${batchdir}
-count=1
-batchnum=1
+m1=l_hip_tail_2mm.nii.gz
+m2=r_hip_tail_2mm.nii.gz
+m3=l_ant_tail_2mm.nii.gz
+m4=r_ant_tail_2mm.nii.gz
+m5=BN_105_2mm.nii
+m6=BN_106_2mm.nii
+m7=BN_107_2mm.nii
+m8=BN_108_2mm.nii
+m9=BN_187_2mm.nii
+m10=BN_188_2mm.nii
+
+LAUNCHDIR=${BATCHDIR}/launch
+SUBJECTDIR=${STUDYDIR}/subjects
+OUTDIR=${STUDYDIR}/logs
+
+# get the subjects we want to perform the analyses on.
+cd ${SUBJECTDIR}
+SUBJECTS=`ls -d ??????`
+#SUBJECTS=(`cat ${SRCDIR}/file_to_run`)
+#echo ${SUBJECTS}
+
+# navigate to batch dir to create launchscripts in
+cd ${BATCHDIR}
+COUNT=1
+BATCHNUM=1
 
 # file names to save output and to launch
-basefile=launch_seed_connectivity_8-masks_batch_
-logfile=${basefile}_RAN_SUBJECTS.log
+BASEFILE=launch_connectivity_con_subjects_batch
+LOGFILE=${BASEFILE}_RAN_SUBJECTS.log
 
 # removes any files by this name in batch dir
-if [ -f ${basefile}_1.sh ]; then
+if [ -e ${BASEFILE}_1.sh ]; then
 echo " "
-echo "Removing the existing ${basefile}* from batch directory."
+echo "Removing the existing ${BASEFILE}* from batch directory."
 echo " "
-
-rm launch_seed_connectivity_8-masks_batch_*.sh
+rm ${BASEFILE}_*.sh
 #echo " "
 #echo "Must remove ${basefile}* files from batch directory."
 #echo " "
 #exit 1
 fi
 
-# cycle through roi list
-for s in ${subjects[@]}; do
-echo $s
+# cycle through the subjects
+for SUBJECT in ${SUBJECTS[@]}; do
+
+#SUBJECT=$(basename ${SUBJECT})
 
 # launchfile for this batch of subjects
-launchfile=${basefile}_${batchnum}.sh
+LAUNCHFILE=${BASEFILE}_${BATCHNUM}.sh
 
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m1} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m2} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m3} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m4} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m5} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m6} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m7} -it '.npy'">>${launchfile}
-echo -e "python ${scriptdir}/seed_connectivity.py -s ${subdir}/${s} -m ${maskdir}/${m8} -it '.npy'">>${launchfile}
+# this creates a launch file to send to TACC
+#echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR1}/${m1} -it 'nifti'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR1}/${m2} -it 'npy'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR1}/${m3} -it 'npy'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR1}/${m4} -it 'npy'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR2}/${m5} -it 'npy'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR2}/${m6} -it 'npy'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR2}/${m7} -it 'npy'">>${LAUNCHFILE}
+echo -e "python ${SRCDIR}/seed_connectivity.py -s ${SUBJECTDIR}/${SUBJECT} -m ${MASKDIR2}/${m8} -it 'npy'">>${LAUNCHFILE}
 
 # keep 16 subjects within a single launch script
-if [ ${count} -eq 15 ]; then
-echo ${batchnum}
+if [ ${COUNT} -eq 30 ]; then
+echo ${BATCHNUM}
 
-if [ ${batchnum} -ge 0 ]; then
-launch -s ${launchfile} -r 03:45:00 -o ${outdir}/${launchfile%.sh}.o -m amdutcher@utexas.edu -N 1 -n 3 -A ANTS -J ${launchdir}/${launchfile%.sh}_JOBFILE
+if [ ${BATCHNUM} -ge 0 ]; then
+launch -s ${LAUNCHFILE} -r 03:00:00 -o ${OUTDIR}/${LAUNCHFILE%.sh}.o -m amdutcher@utexas.edu -N 1 -n 2 -A ANTS -J ${LAUNCHDIR}/${LAUNCHFILE%.sh}_JOBFILE
 fi
-batchnum=`echo "${batchnum}+1 " | bc -l`
-count=1
+BATCHNUM=`echo "${BATCHNUM}+1 " | bc -l`
+COUNT=1
 fi
 
-#
-if [ ${batchnum} -eq 30 ];then
-echo "Reached 30 slurm scripts. Exiting..."
+# 
+if [ ${BATCHNUM} -eq 51 ];then
+echo "Reached 50 slurm scripts. Exiting..."
 exit 1
 fi
 
-count=`echo "${count}+1" | bc -l`
+COUNT=`echo "${COUNT}+1" | bc -l`
 
 done
