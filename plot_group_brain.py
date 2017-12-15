@@ -55,7 +55,7 @@ assert os.path.exists( rmap_file )
 zmap_file = os.path.join( out_dir,"%s_z_%s_group.nii.gz"%( mask, imgsuf ) )
 zmnirsfc  = mnispace.a.mapper.reverse( mean_mz )
 zmnirsfc  = np.squeeze( zmnirsfc )
-znimg     = nb.Nifti1Image( zmnirsfc, mnispace.a.imgaffine )
+znimg     = nb.Niftiq1Image( zmnirsfc, mnispace.a.imgaffine )
 znimg.to_filename( zmap_file )
 assert os.path.exists( zmap_file )
 
@@ -80,9 +80,14 @@ assert os.path.exists( zmap_file )
 # display.savefig('%s.pdf'%maskname)
 # # FIGURE TYPE 1
 
-# # FIGURE TYPE 2
-# display = plotting.plot_stat_map( zmap_file, threshold=0.3, display_mode='z',cut_coords=5, colorbar=True )
+# FIGURE TYPE 2
+# Figure 1 type
 
-# display.savefig('%s.pdf'%maskname)
+# still needs title situation.
+#fig, axes = plt.subplots(3, 1, figsize=(15,15))
+#fig.set_facecolor('w')
+#x=plotting.plot_stat_map( zmap_file, title='Left Anterior Cingulate Cortex', figure=fig, axes=axes[0], threshold=0.3, display_mode='x',cut_coords=5, colorbar=True )
+#y=plotting.plot_stat_map( zmap_file, figure=fig, axes=axes[1], threshold=0.3, display_mode='z',cut_coords=5, colorbar=True )
+#z=plotting.plot_stat_map( zmap_file, figure=fig, axes=axes[2], threshold=0.3, display_mode='y',cut_coords=5, colorbar=True )
 
 # FIGURE TYPE 2
