@@ -82,7 +82,7 @@ if not os.path.exists(outdir):
     os.mkdir(outdir)
 
 npybrain = os.path.join(outdir,"brain_array.npy")
-maskpref = os.path.join(outdir,"%s_array_con-4mm"%maskname)
+maskpref = os.path.join(outdir,"%s_r_con-4mm"%maskname)
 ## DESCRIBE THE DATA THAT IS BEING USED.
 
 
@@ -162,7 +162,7 @@ np.savetxt( "%s_mean.txt"%maskpref, cat_mask_mts )
 
 
 ## RUN THE CORRELATION
-print "Running resting-state seed correlations with the rest of the brain, see numpyp.corrcoef()."
+print "Running resting-state seed correlations with the rest of the brain, see numpy.corrcoef()."
 P=cat_brain.shape[1]
 rsfc=np.zeros([1,P])
 for v in np.arange(P):
@@ -172,12 +172,18 @@ for v in np.arange(P):
 
 
 ## SAVE OUTPUT FROM THE CORRELATION
+rsfc[np.isnan(rsfc)]=0
+#print "Runnning fisher-z transform"
+#Xxz = np.arctanh( rsfc )
+Xxz = rsfc
+
 print "Saving rsfc .npy and .nii.gz file in %s"%outdir
-np.save( os.path.join(outdir,"%s_rsfc"%(maskpref)), rsfc)
+np.save( os.path.join(outdir,"%s_rsfc"%(maskpref)), Xxz)
 mnispace  = fmri_dataset( args.brainmask, mask=args.brainmask )
-mnirsfc   = mnispace.a.mapper.reverse( rsfc )
+mnirsfc   = mnispace.a.mapper.reverse( Xxz )
+mnirsfc   = np.squeeze( mnirsfc )
 nimg      = nb.Nifti1Image( mnirsfc, mnispace.a.imgaffine )
-nimg.to_filename(os.path.join(outdir,"%s_rsfc.nii.gz"%(maskpref)))
+nimg.to_filename( os.path.join(outdir,"%s_%s_rsfc.nii.gz"%( maskpref, sname )))
 ## SAVE OUTPUT FROM THE CORRELATION
 
 
